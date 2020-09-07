@@ -20,13 +20,15 @@ jobs:
       uses: ruby/setup-ruby@ec106b438a1ff6ff109590de34ddc62c540232e0
       with:
         ruby-version: ${{ matrix.ruby_version }}
-    - uses: actions/cache@v2
+    - name: bundle cache
+      uses: actions/cache@v2
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-${{ matrix.ruby_version }}-${{matrix.libvips_version}}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-${{ matrix.ruby_version }}-${{matrix.libvips_version}}-gems-v2-${{ hashFiles('**/despeck.gemspec') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.ruby_version }}-${{matrix.libvips_version}}-gems-
-    - uses: actions/cache@v2
+          ${{ runner.os }}-${{ matrix.ruby_version }}-${{matrix.libvips_version}}-gems-v2-
+    - name: bundle vips
+      uses: actions/cache@v2
       with:
         path: ~/vips
         key: ${{ runner.os }}-${{ matrix.ruby_version }}-${{matrix.libvips_version}}-vips-${{ hashFiles('**/install-vips.sh') }}
