@@ -3,12 +3,14 @@
 RSpec.describe Despeck::WatermarkRemover do
   let(:add_contrast)    { false }
   let(:add_black)       { false }
+  let(:accurate)        { false }
   let(:watermark_color) { nil }
   let(:output_image) do
     described_class.new(
       add_contrast: add_contrast,
       add_black: add_black,
-      watermark_color: watermark_color
+      watermark_color: watermark_color,
+      accurate: accurate
     ).remove_watermark(input_image)
   end
 
@@ -45,6 +47,10 @@ RSpec.describe Despeck::WatermarkRemover do
     let(:input_image) { read_image('yellow_watermark.jpg') }
 
     it_behaves_like 'watermark remover'
+    context 'when accurate flag given' do
+      let(:accurate) { true }
+      it_behaves_like 'watermark remover'
+    end
   end
 
   context 'for image without watermark' do
