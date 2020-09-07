@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rtesseract', '~> 2.2'
   spec.add_dependency 'ruby-vips', '~> 2.0'
 
-  spec.add_development_dependency 'bundler', '~> 1.16'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.0'

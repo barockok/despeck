@@ -21,5 +21,6 @@ rm -rf $HOME/vips
 wget $vips_site/v$version/vips-$version.tar.gz
 tar xf vips-$version.tar.gz
 cd vips-$version
-CXXFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 ./configure --prefix=$HOME/vips $*
-make && make install
+CXXFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 ./configure --prefix=$HOME/vips $* >/dev/null 2>&1
+make >/dev/null 2>&1
+make install >/dev/null 2>&1
