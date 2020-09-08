@@ -18,9 +18,14 @@ if [ -d "$HOME/vips/bin" ]; then
 fi
 
 rm -rf $HOME/vips
-wget $vips_site/v$version/vips-$version.tar.gz
+echo 'Downloading libvips source'
+wget $vips_site/v$version/vips-$version.tar.gz >/dev/null 2>&1
+echo 'Extracting'
 tar xf vips-$version.tar.gz
 cd vips-$version
+echo 'Configuring'
 CXXFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 ./configure --prefix=$HOME/vips $* >/dev/null 2>&1
+echo 'Make'
 make >/dev/null 2>&1
+echo 'Install'
 make install >/dev/null 2>&1
