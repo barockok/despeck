@@ -47,11 +47,34 @@ RSpec.describe Despeck::WatermarkRemover do
     let(:input_image) { read_image('yellow_watermark.jpg') }
 
     it_behaves_like 'watermark remover'
-    context 'when accurate flag given' do
-      let(:accurate) { true }
+  end
+
+  context 'when accurate flag given' do
+    let(:accurate) { true }
+    context 'for red watermark' do
+      let(:input_image) { read_image('red_watermark.jpg') }
+
       it_behaves_like 'watermark remover'
     end
-  end
+
+    context 'for green watermark' do
+      let(:input_image) { read_image('green_watermark.jpg') }
+
+      it_behaves_like 'watermark remover'
+    end
+
+    context 'for purple watermark' do
+      let(:input_image) { read_image('purple_watermark.jpg') }
+
+      it_behaves_like 'watermark remover'
+    end
+
+    context 'for yellow watermark' do
+      let(:input_image) { read_image('yellow_watermark.jpg') }
+
+      it_behaves_like 'watermark remover'
+    end
+   end
 
   context 'for image without watermark' do
     let(:input_image) { read_image('bw.jpg') }
