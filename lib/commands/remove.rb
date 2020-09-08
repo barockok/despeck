@@ -63,7 +63,6 @@ module Despeck
             sensitivity: sensitivity,
             watermark_color: color
           )
-
         input_image =
           input.is_a?(String) ? Vips::Image.new_from_file(input) : input
 

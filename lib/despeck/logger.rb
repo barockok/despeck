@@ -12,7 +12,7 @@ module Despeck
   end
 
   def self.apply_logger_level(debug = false)
-    logger.level = debug ? Logger::DEBUG : Logger::ERROR
+    logger.level = debug ? Logger::DEBUG : Logger::DEBUG
   end
 
   def self.with_level(level = Logger::ERROR)

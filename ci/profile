@@ -1,0 +1,4 @@
+export NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+export PATH=$HOME/vips/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/vips/lib:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=$HOME/vips/lib/pkgconfig:$PKG_CONFIG_PATH
