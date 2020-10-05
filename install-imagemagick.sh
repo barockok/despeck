@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+set -euox pipefail
+
+if [ -v STYLE_CHECKS ]; then
+  set +ux
+  exit 0
+fi
+
+if [ ! -v IMAGEMAGICK_VERSION ]; then
+  echo "you must specify an ImageMagick version."
+  exit 1
+fi
+
+sudo apt-get clean
+sudo apt-get update
+
+# remove all existing imagemagick related packages
+sudo apt-get autoremove -y imagemagick* libmagick* --purge
+
+# install build tools, ImageMagick delegates
+sudo apt-get install -y build-essential libx11-dev libxext-dev zlib1g-dev \
+  liblcms2-dev libpng-dev libjpeg-dev libfreetype6-dev libxml2-dev \
+  libtiff5-dev libwebp-dev liblqr-1-0-dev vim gsfonts ghostscript ccache
+
+if [ ! -d /usr/include/freetype ]; then
+  # If `/usr/include/freetype` is not existed, ImageMagick 6.7 configuration fails about Freetype.
+  sudo ln -sf /usr/include/freetype2 /usr/include/freetype
+fi
+
+if [ ! -v SOURCE_TARGET_DIR ]; then
+  project_dir=$(pwd)
+else
+  project_dir=${SOURCE_TARGET_DIR}
+fi
+
+
+build_dir="${project_dir}/build-ImageMagick/ImageMagick-${IMAGEMAGICK_VERSION}"
+if [ -v CONFIGURE_OPTIONS ]; then
+  build_dir="${build_dir}-${CONFIGURE_OPTIONS}"
+fi
+
+
+build_imagemagick() {
+  mkdir -p build-ImageMagick
+
+  version=(${IMAGEMAGICK_VERSION//./ })
+  wget "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz"
+  tar -xf "ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz"
+  rm "ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz"
+  mv "ImageMagick-${IMAGEMAGICK_VERSION}" "${build_dir}"
+
+  options="--with-magick-plus-plus=no --disable-docs"
+  if [ -v CONFIGURE_OPTIONS ]; then
+    options="${CONFIGURE_OPTIONS} ${options}"
+  fi
+
+  cd "${build_dir}"
+  CC="ccache cc" CXX="ccache c++" ./configure --prefix=/usr "${options}"
+  make -j
+  touch "${build_dir}/BUILD_DONE.flag" 
+}
+
+
+cd "${project_dir}"
+if [ -f "${build_dir}/BUILD_DONE.flag" ]; then
+  echo "build use cache"
+else
+  if [ ! -d "${build_dir}" ]; then
+    build_imagemagick
+  fi
+fi
+
+cd "${build_dir}"
+sudo make install -j
+sudo ldconfig
+set +ux
