@@ -12,19 +12,21 @@ on:
 
 jobs:
   rspec:
-    name: Ubuntu RSpec [ruby-${{ matrix.ruby }}&libvips-${{ matrix.libvips_version }}]
+    name: Ubuntu [ruby-${{ matrix.ruby }}&libvips-${{ matrix.libvips_version }}&IM-${{ matrix.image_magick_version }}]
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '2.6', '2.5', '2.4' ]
-        libvips_version: ['8.6.5', '8.7.4', '8.10.1']
+        ruby: [ '2.6']
+        libvips_version: ['8.10.1']
+        image_magick_version: [ '6.9.10-33']
         experimental: [false]
-        include:
-          - ruby: '2.7'
-            libvips_version: '8.7.4'
-            experimental: true
+        # include:
+        #   - ruby: '2.7'
+        #     libvips_version: '8.7.4'
+        #     image_magick_version:  '7.0.10-23'
+        #     experimental: true
 
     steps:
     - uses: actions/checkout@v2
@@ -35,20 +37,29 @@ jobs:
     - name: Setup Deps Package
       run: |
         sudo apt-get install -y libexpat1-dev gettext liblcms2-dev \
-          libmagickwand-dev libopenexr-dev libcfitsio-dev libgif-dev \
+          libopenexr-dev libcfitsio-dev libgif-dev \
           libgs-dev libgsf-1-dev libmatio-dev libopenslide-dev liborc-0.4-dev \
           libpango1.0-dev libpoppler-glib-dev librsvg2-dev \
           libwebp-dev libfftw3-dev libglib2.0-dev tesseract-ocr \
-          tesseract-ocr-chi-sim imagemagick \
+          tesseract-ocr-chi-sim \
           libxslt-dev libxml2-dev
-    - name: Cache libvips
+    - name: Cache Custom build
       uses: actions/cache@v2
       with:
-        path: ~/vips
-        key: ${{ runner.os }}-${{matrix.libvips_version}}-vips-${{ hashFiles('**/install-vips.sh') }}
-    - name: Setup Libvips
+        path: ~/custom-build
+        key: ${{ runner.os }}-${{matrix.libvips_version}}-vips___${{ matrix.image_magick_version }}-im__${{ hashFiles('**/install-vips.sh') }}__${{ hashFiles('**/install-imagemagick.sh') }}
+    - name: Build Cache Dir
+      run: |
+        mkdir -p ~/custom-build
+    - name: Setup ImageMagick ${{ matrix.image_magick_version }}
+      run: |
+        export IMAGEMAGICK_VERSION=${{ matrix.image_magick_version }}
+        export SOURCE_TARGET_DIR=~/custom-build
+        ./install-imagemagick.sh
+    - name: Setup Libvips ${{matrix.libvips_version}}
       run: |
         export LIBVIPS_VERSION=${{matrix.libvips_version}}
+        export SOURCE_TARGET_DIR=~/custom-build
         bash install-vips.sh --without-python
     - name: Update gems
       run: |
